@@ -1,0 +1,17 @@
+{
+  "name": "ADHD Note App",
+  "short_name": "ADHD Notes",
+  "description": "دفتر ملاحظات وتخطيط يومي وأسبوعي وشهري - ADHDNOTEAPP.NET",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EDE8DF",
+  "theme_color": "#EDE8DF",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ADHDNOTEAPP.NET</title>
+<meta name="theme-color" content="#EDE8DF">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Baloo+2:wght@600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDE8DF;
+  --ink:#3a3a3a;
+  --line:#c9a876;
+  --yellow:#F5D98B;
+  --yellow-dark:#E8C36B;
+  --purple:#8f82d1;
+  --orange:#E8823C;
+  --teal:#3FBFA0;
+  --green:#7C9A56;
+  --green-dark:#63813f;
+  --terracotta:#B5573A;
+  --card-pink:#D9A896;
+  --card-olive:#B7A876;
+  --card-sand:#F0D9A0;
+  --card-sage:#A9C08A;
+  --card-lavender:#C9CBEB;
+  --card-peach:#F0C0A0;
+  --card-gray:#BFBFBF;
+  --card-brown:#C7A98A;
+  --star-red:#C0392B;
+  --white:#ffffff;
+  --shadow: 0 2px 0 rgba(0,0,0,0.08);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Cairo',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+#app{
+  max-width:520px;
+  margin:0 auto;
+  min-height:100vh;
+  position:relative;
+  padding:18px 20px 40px;
+}
+.page{display:none;animation:fadeIn .25s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* decorative corner plant (approximation) */
+.deco-plant{
+  position:absolute; top:0; left:0; width:120px; height:170px; pointer-events:none; opacity:.9; z-index:0;
+}
+.deco-hand{
+  position:absolute; bottom:0; right:8px; width:70px; height:150px; pointer-events:none; opacity:.55; z-index:0;
+}
+.page > *{position:relative; z-index:1;}
+
+/* header */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  border-bottom:2px solid var(--line);
+  padding-bottom:10px; margin-bottom:18px;
+}
+.home-btn{
+  width:38px;height:38px;border:2px solid var(--ink);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;background:transparent;
+  cursor:pointer; flex:0 0 auto;
+}
+.home-btn svg{width:18px;height:18px;}
+.brand-name{
+  font-family:'Caveat',cursive; font-weight:700; font-size:2rem; color:#555;
+  flex:1; text-align:center; letter-spacing:.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.spacer38{width:38px;flex:0 0 auto;}
+
+/* pill tab title (Sign in / Home / Acc) */
+.pill-row{display:flex; align-items:center; justify-content:center; margin:10px 0 26px;}
+.pill-bracket{height:34px;width:34px;border:2px solid var(--ink); border-radius:0 0 0 14px; border-top:none; border-right:none;}
+.pill-bracket.right{border-radius:0 0 14px 0; border-left:none; border-right:2px solid var(--ink); border-top:none;transform:scaleX(-1);}
+.pill-bar{height:2px; flex:1; background:var(--ink); align-self:center;}
+.pill{
+  background:var(--yellow); border:2px dashed var(--ink); border-radius:16px;
+  padding:8px 26px; margin:0 -2px; z-index:2;
+}
+.pill span{font-family:'Baloo 2',cursive; font-weight:800; font-size:1.5rem; color:var(--purple);}
+
+/* signin */
+.field-label{font-size:1.1rem; margin:18px 0 6px;}
+.field-input{
+  width:100%; border:none; border-bottom:2px solid var(--ink); background:transparent;
+  font-size:1.05rem; padding:10px 6px; font-family:'Cairo',sans-serif; outline:none;
+}
+.field-wrap{display:flex; align-items:center; gap:8px;}
+.field-wrap .arrow{font-size:1rem;}
+.btn-row{display:flex; justify-content:center; gap:16px; margin-top:26px;}
+.btn-pill{
+  background:var(--green); color:#fff; border:none; padding:10px 30px; border-radius:20px;
+  font-family:'Cairo',sans-serif; font-weight:700; font-size:1rem; cursor:pointer; box-shadow:var(--shadow);
+}
+.btn-pill:active{background:var(--green-dark);}
+.btn-pill.secondary{background:#8a8a8a;}
+.btn-pill.danger{background:var(--star-red);}
+
+/* home nav list */
+.nav-list{list-style:none; padding:0; margin:0;}
+.nav-list li{
+  font-size:1.6rem; text-align:right; padding:14px 4px; cursor:pointer;
+  display:flex; align-items:center; justify-content:flex-end; gap:10px; font-weight:600;
+}
+.nav-list li .arrow{color:var(--ink);}
+.nav-list li:active{opacity:.6;}
+
+/* section header word (MONTH/WEEK/DAY/PAY) */
+.section-title{font-family:'Baloo 2',cursive; font-weight:800; color:var(--orange); font-size:2.2rem; margin:-6px 0 4px;
+  text-shadow:2px 2px 0 rgba(0,0,0,0.12);}
+.section-title.teal{color:var(--teal);}
+.section-title-row{display:flex; gap:14px; align-items:baseline;}
+
+/* colored info bars (month page) */
+.bar-label{display:flex; align-items:center; gap:8px; justify-content:flex-end; font-size:1.15rem; font-weight:700; margin:14px 0 8px;}
+.ticker{
+  background:#fff; border-radius:22px; padding:10px 18px; margin-bottom:6px; overflow:hidden; white-space:nowrap;
+  position:relative; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+}
+.ticker-track{display:inline-block; padding-right:100%; animation:marquee 14s linear infinite;}
+.ticker:hover .ticker-track{animation-play-state:paused;}
+@keyframes marquee{ from{transform:translateX(0);} to{transform:translateX(-100%);} }
+.ticker.empty .ticker-track{animation:none; padding-right:0;}
+.ticker .muted{color:#999;}
+
+/* calendar */
+.cal-wrap{display:flex; margin-top:18px;}
+.cal-month-label{
+  writing-mode:vertical-rl; font-family:'Baloo 2',cursive; font-size:1.8rem; font-weight:800; color:#777;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:6px; margin-left:6px;
+}
+.cal-month-num{font-size:2.4rem; font-weight:800; color:#777; writing-mode:horizontal-tb; margin-top:6px;}
+table.cal{border-collapse:collapse; width:100%; font-family:'Baloo 2',cursive;}
+table.cal th{background:var(--card-sage); color:#fff; padding:10px 2px; font-size:.85rem; border:1px solid #dcd6cb;}
+table.cal td{
+  border:1px solid #dcd6cb; text-align:center; padding:10px 2px; background:#F1DED2; font-weight:700; font-size:1.05rem;
+  position:relative; cursor:pointer; user-select:none;
+}
+table.cal td.empty{background:transparent; border:none; cursor:default;}
+table.cal td.today{background:#D9B79F;}
+table.cal td .star{position:absolute; top:2px; left:4px; color:var(--star-red); font-size:.8rem;}
+
+.quick-links{margin-top:18px; display:flex; flex-direction:column; gap:12px; align-items:center;}
+.quick-link{
+  background:var(--green); color:#fff; border:none; border-radius:20px; padding:10px 20px; width:100%;
+  display:flex; align-items:center; justify-content:center; gap:8px; font-family:'Cairo'; font-weight:700; font-size:1rem; cursor:pointer;
+}
+
+/* week grid */
+.week-title{text-align:center; margin-bottom:16px;}
+.week-title .ar{font-family:'Baloo 2',cursive; font-weight:800; font-size:1.8rem; color:#7f96ad;}
+.week-notes{
+  background:var(--card-brown); border-radius:30px; padding:16px 20px; margin-bottom:20px; min-height:70px;
+}
+.week-notes textarea, .lined-textarea{
+  width:100%; border:none; background:transparent; resize:none; font-family:'Cairo'; font-size:1rem; outline:none; color:#333;
+}
+.week-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.week-day-card{border-radius:16px; padding:12px 14px; min-height:140px;}
+.week-day-card.full{grid-column:1 / span 2;}
+.week-day-head{display:flex; justify-content:space-between; font-size:.85rem; margin-bottom:8px; font-weight:700;}
+.week-day-head input{border:none; background:transparent; font-size:.85rem; font-weight:700; width:60%; font-family:'Cairo';}
+.week-day-lines{display:flex; flex-direction:column; gap:6px;}
+.week-day-lines input{
+  border:none; border-bottom:1px solid rgba(0,0,0,0.25); background:transparent; font-family:'Cairo'; font-size:.9rem; padding:2px 0; outline:none;
+}
+
+/* day page */
+.day-date-row{display:flex; gap:16px; font-weight:700; margin-bottom:6px;}
+.day-date-row input{border:none; border-bottom:1px solid var(--ink); background:transparent; font-family:'Cairo'; font-weight:700; outline:none;}
+.day-grid{display:grid; grid-template-columns:1fr 1.15fr; gap:14px; margin-top:10px;}
+.day-card{border-radius:16px; padding:12px 14px;}
+.day-card h4{margin:0 0 8px; font-size:1.05rem; display:flex; align-items:center; gap:6px; justify-content:flex-end;}
+.day-card textarea{width:100%; min-height:80px; border:none; background:transparent; resize:none; font-family:'Cairo'; font-size:.9rem; outline:none;}
+.tasks-col h4{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:10px; font-size:1.05rem;}
+.task-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.task-row input[type=text]{flex:1; border:none; border-bottom:1px solid #999; background:transparent; font-family:'Cairo'; outline:none; text-align:right;}
+.task-check{width:26px;height:26px;border-radius:50%; border:2px solid var(--card-brown); background:transparent; cursor:pointer; flex:0 0 auto;}
+.task-check.done{background:var(--card-brown);}
+.notes-box{background:var(--card-sand); border-radius:18px; padding:16px; margin-top:18px; min-height:110px;}
+.notes-box textarea{width:100%; min-height:100px; border:none; background:transparent; resize:none; font-family:'Cairo'; outline:none;}
+
+/* pay page */
+.pay-cat{margin-bottom:26px;}
+.pay-cat-title{display:flex; align-items:center; gap:8px; justify-content:flex-end; font-size:1.2rem; font-weight:700; margin-bottom:10px;}
+.pay-card{border-radius:24px; padding:16px 20px;}
+.pay-row{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.12);}
+.pay-row:last-child{border-bottom:none;}
+.pay-row input[type=date]{border:none; background:transparent; font-family:'Cairo'; font-size:.85rem; width:120px;}
+.pay-row input[type=text]{flex:1; border:none; background:transparent; font-family:'Cairo'; font-size:.95rem; outline:none; text-align:right;}
+.add-row-btn{margin-top:8px; background:transparent; border:1px dashed #555; border-radius:14px; padding:6px 14px; font-family:'Cairo'; cursor:pointer; width:100%;}
+
+/* free zone */
+.fz-tools{position:absolute; top:70px; right:auto; left:0; display:flex; flex-direction:column; gap:10px;}
+.fz-tool{
+  width:44px;height:44px;border-radius:10px;background:var(--yellow-dark); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.fz-tool.active{outline:3px solid var(--orange);}
+.fz-board{
+  background:var(--card-sand); border-radius:26px; margin-right:0; margin-left:56px; min-height:60vh; padding:20px; position:relative;
+}
+.fz-date-row{display:flex; justify-content:space-between; margin-bottom:10px; font-weight:700;}
+.fz-date-row input{border:none; border-bottom:1px solid #333; background:transparent; font-family:'Cairo'; font-weight:700; outline:none;}
+.fz-lined{
+  background-image: repeating-linear-gradient(transparent, transparent 33px, #00000030 34px);
+  min-height:55vh; width:100%; border:none; resize:none; font-family:'Cairo'; font-size:1rem; outline:none; background-color:transparent; line-height:34px; padding-top:0;
+}
+canvas.fz-canvas{width:100%; height:55vh; touch-action:none; border-radius:12px; background:transparent; display:block;}
+
+/* account page */
+.acc-list{margin-top:10px;}
+.acc-item{
+  display:flex; align-items:center; justify-content:flex-end; gap:10px; font-size:1.3rem; padding:16px 4px; cursor:pointer; font-weight:600;
+}
+.modal-overlay{position:fixed; inset:0; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:50;}
+.modal-box{background:var(--bg); border-radius:18px; padding:24px; width:min(340px,86%); text-align:center;}
+.modal-box p{font-size:1.05rem; margin-bottom:18px;}
+.modal-box .btn-row{margin-top:0;}
+.hidden{display:none !important;}
+.toast{
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:10px 20px; border-radius:20px;
+  font-size:.9rem; z-index:60; opacity:0; pointer-events:none; transition:opacity .3s;
+}
+.toast.show{opacity:1;}
+.install-banner{
+  display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--card-sage); color:#fff;
+  border-radius:14px; padding:10px 14px; margin-bottom:16px; font-size:.9rem;
+}
+.install-banner button{background:#fff; color:var(--green-dark); border:none; border-radius:12px; padding:6px 14px; font-weight:700; cursor:pointer;}
+small.hint{display:block; color:#888; margin-top:4px; font-size:.78rem;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ================= SIGN IN ================= -->
+<section id="page-signin" class="page">
+  <div style="text-align:center; margin-top:6px;">
+    <div style="font-family:'Caveat',cursive; font-weight:700; font-size:2.6rem; color:#666;">ADHD Note App</div>
+    <div style="font-family:'Cairo'; font-size:.75rem; letter-spacing:3px; color:#999; margin-top:-6px;">ADHDNOTEAPP.NET</div>
+  </div>
+  <div class="pill-row">
+    <div class="pill-bracket"></div>
+    <div class="pill-bar"></div>
+    <div class="pill"><span>الدخول</span></div>
+    <div class="pill-bar"></div>
+    <div class="pill-bracket right"></div>
+  </div>
+
+  <div class="field-label">الاسم:</div>
+  <div class="field-wrap">
+    <span class="arrow">▶</span>
+    <input id="signin-name" class="field-input" type="text" placeholder="اكتب اسمك هنا" />
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-pill" id="btn-enter">Enter</button>
+  </div>
+  <div style="text-align:center; margin-top:40px;">
+    <div style="font-family:'Baloo 2',cursive; font-size:2.4rem; color:#d8cfc0; letter-spacing:2px;">PLANNER</div>
+  </div>
+</section>
+
+<!-- ================= HOME ================= -->
+<section id="page-home" class="page">
+  <div class="topbar" style="justify-content:center; border-bottom:2px solid var(--line);">
+    <div class="brand-name" id="home-username">الاسم</div>
+  </div>
+  <div class="pill-row">
+    <div class="pill-bracket"></div>
+    <div class="pill-bar"></div>
+    <div class="pill"><span>Home</span></div>
+    <div class="pill-bar"></div>
+    <div class="pill-bracket right"></div>
+  </div>
+  <ul class="nav-list">
+    <li data-go="month"><span>الشهر</span><span class="arrow">◀</span></li>
+    <li data-go="week"><span>الأسبوع</span><span class="arrow">◀</span></li>
+    <li data-go="day"><span>اليوم</span><span class="arrow">◀</span></li>
+    <li data-go="pay"><span>المدفوعات</span><span class="arrow">◀</span></li>
+    <li data-go="freezone"><span>المنطقة الحرة</span><span class="arrow">◀</span></li>
+    <li data-go="account"><span>الحساب</span><span class="arrow">◀</span></li>
+  </ul>
+  <div id="home-install-slot"></div>
+</section>
+
+<!-- ================= MONTH ================= -->
+<section id="page-month" class="page">
+  <div class="topbar">
+    <button class="home-btn" data-go="home">🏠</button>
+    <div class="brand-name" id="month-username">الاسم</div>
+    <div class="spacer38"></div>
+  </div>
+  <div class="section-title-row"><div class="section-title">MONTH</div></div>
+
+  <div class="bar-label">🏃 المهام</div>
+  <div class="ticker" id="ticker-tasks"><div class="ticker-track"></div></div>
+
+  <div class="bar-label">✊ الأهداف</div>
+  <div class="ticker" id="ticker-goals"><div class="ticker-track"></div></div>
+
+  <div class="bar-label">💡 الأفكار</div>
+  <div class="ticker" id="ticker-ideas"><div class="ticker-track"></div></div>
+
+  <div class="bar-label">📌 الملاحظات</div>
+  <div class="ticker" id="ticker-notes"><div class="ticker-track"></div></div>
+
+  <div class="cal-wrap">
+    <div class="cal-month-label">
+      <span id="cal-month-name">JULY</span>
+      <span class="cal-month-num" id="cal-month-num">07</span>
+    </div>
+    <table class="cal" id="cal-table"><thead></thead><tbody></tbody></table>
+  </div>
+
+  <div class="quick-links">
+    <button class="quick-link" data-go="pay">🛒 اشتراكات وفواتير / ضروريات شهرية</button>
+    <button class="quick-link" data-go="freezone">✏️ الكتابة الحرة</button>
+  </div>
+  <small class="hint">اضغط على أي تاريخ لفتح صفحة اليوم — اضغط مطوّلاً لإضافة/إزالة نجمة ⭐</small>
+</section>
+
+<!-- ================= WEEK ================= -->
+<section id="page-week" class="page">
+  <div class="topbar">
+    <button class="home-btn" data-go="home">🏠</button>
+    <div class="brand-name" id="week-username">الاسم</div>
+    <div class="spacer38"></div>
+  </div>
+  <div class="section-title-row"><div class="section-title" style="color:#7f96ad;">WEEK</div></div>
+  <div class="week-title"><span class="ar">أبرز النقاط</span></div>
+  <div class="week-notes">
+    <div style="display:flex;justify-content:space-between;font-weight:700;margin-bottom:6px;">
+      <span>📌</span><span>ملاحظات</span>
+    </div>
+    <textarea id="week-notes" placeholder="اكتب أبرز ملاحظات الأسبوع..."></textarea>
+  </div>
+  <div class="week-grid" id="week-grid"></div>
+</section>
+
+<!-- ================= DAY ================= -->
+<section id="page-day" class="page">
+  <div class="topbar">
+    <button class="home-btn" data-go="home">🏠</button>
+    <div class="brand-name" id="day-username">الاسم</div>
+    <div class="spacer38"></div>
+  </div>
+  <div class="day-date-row">
+    <span>DATE: <input type="date" id="day-date"></span>
+  </div>
+  <div class="section-title-row"><div class="section-title">DAY</div></div>
+
+  <div class="day-grid">
+    <div>
+      <div class="day-card" style="background:var(--card-brown);">
+        <h4>💡 فكرة</h4>
+        <textarea id="day-idea" placeholder="اكتب فكرتك..."></textarea>
+      </div>
+      <div class="day-card" style="background:var(--card-sage); margin-top:14px;">
+        <h4>✊ الأهداف</h4>
+        <textarea id="day-goals" placeholder="أهداف اليوم..."></textarea>
+      </div>
+      <div class="day-card" style="background:var(--card-lavender); margin-top:14px;">
+        <h4>🛒 المدفوعات</h4>
+        <textarea id="day-payments" placeholder="مدفوعات اليوم..."></textarea>
+      </div>
+    </div>
+    <div class="tasks-col">
+      <h4>🏃 مهام اليوم</h4>
+      <div id="day-tasks"></div>
+    </div>
+  </div>
+
+  <div class="notes-box">
+    <div style="font-weight:700; display:flex; justify-content:flex-end; gap:6px;">📌 الملاحظات</div>
+    <textarea id="day-notes" placeholder="ملاحظات اليوم..."></textarea>
+  </div>
+</section>
+
+<!-- ================= PAY ================= -->
+<section id="page-pay" class="page">
+  <div class="topbar">
+    <button class="home-btn" data-go="home">🏠</button>
+    <div class="brand-name" id="pay-username">الاسم</div>
+    <div class="spacer38"></div>
+  </div>
+  <div class="section-title-row"><div class="section-title">PAY</div></div>
+
+  <div class="pay-cat">
+    <div class="pay-cat-title">💳 اشتراكات وفواتير</div>
+    <div class="pay-card" style="background:var(--card-peach);" id="pay-subs"></div>
+    <button class="add-row-btn" data-add="subs">+ إضافة بند</button>
+  </div>
+
+  <div class="pay-cat">
+    <div class="pay-cat-title">🛒 ضروريات شهرية</div>
+    <div class="pay-card" style="background:var(--card-sage);" id="pay-necessities"></div>
+    <button class="add-row-btn" data-add="necessities">+ إضافة بند</button>
+  </div>
+</section>
+
+<!-- ================= FREE ZONE ================= -->
+<section id="page-freezone" class="page">
+  <div class="topbar">
+    <button class="home-btn" data-go="home">🏠</button>
+    <div class="brand-name" id="fz-username">الاسم</div>
+    <div class="spacer38"></div>
+  </div>
+  <div class="section-title-row" style="gap:10px;">
+    <div class="section-title">FREE</div><div class="section-title teal">ZONE</div>
+  </div>
+
+  <div style="position:relative;">
+    <div class="fz-tools">
+      <button class="fz-tool" id="fz-pen" title="رسم حر">✏️</button>
+      <button class="fz-tool active" id="fz-key" title="أسطر للكتابة">⌨️</button>
+    </div>
+    <div class="fz-board">
+      <div class="fz-date-row">
+        <span>date: <input type="date" id="fz-date"></span>
+        <span>اليوم:</span>
+      </div>
+      <textarea class="fz-lined" id="fz-textarea" placeholder=""></textarea>
+      <canvas class="fz-canvas hidden" id="fz-canvas"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ACCOUNT ================= -->
+<section id="page-account" class="page">
+  <div class="topbar">
+    <button class="home-btn" data-go="home">🏠</button>
+    <div class="brand-name" id="acc-username">الاسم</div>
+    <div class="spacer38"></div>
+  </div>
+  <div class="pill-row">
+    <div class="pill-bracket"></div>
+    <div class="pill-bar"></div>
+    <div class="pill"><span>ACC</span></div>
+    <div class="pill-bar"></div>
+    <div class="pill-bracket right"></div>
+  </div>
+  <ul class="acc-list">
+    <li class="acc-item" id="btn-export"><span>Export Data</span><span>📤</span></li>
+    <li class="acc-item" id="btn-delete"><span>Delete Acc</span><span>🗑️</span></li>
+  </ul>
+  <div id="acc-install-slot" style="margin-top:24px;"></div>
+</section>
+
+</div>
+
+<!-- Export period modal -->
+<div class="modal-overlay hidden" id="export-modal">
+  <div class="modal-box">
+    <p>اختر الفترة الزمنية لتصدير البيانات</p>
+    <div style="display:flex; gap:10px; margin-bottom:16px;">
+      <input type="date" id="export-from" class="field-input" style="text-align:center;">
+      <input type="date" id="export-to" class="field-input" style="text-align:center;">
+    </div>
+    <div class="btn-row">
+      <button class="btn-pill secondary" id="export-cancel">إلغاء</button>
+      <button class="btn-pill" id="export-confirm">تنزيل</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div class="modal-overlay hidden" id="delete-modal">
+  <div class="modal-box">
+    <p>هل أنت متأكد من حذف الحساب وكل البيانات؟ لا يمكن التراجع عن هذا الإجراء.</p>
+    <div class="btn-row">
+      <button class="btn-pill" id="delete-yes">Yes</button>
+      <button class="btn-pill secondary" id="delete-no">No</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DATA LAYER ===================== */
+const STORAGE_KEY = 'adhd_note_app_data_v1';
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { name:null, days:{}, weeks:{}, pay:{subs:[], necessities:[]}, freezone:{}, redStars:[] };
+}
+let DATA = loadData();
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); }
+
+function ensureDay(dateStr){
+  if(!DATA.days[dateStr]){
+    DATA.days[dateStr] = { idea:'', goals:'', payments:'', notes:'', tasks: Array.from({length:9},()=>({text:'',done:false})) };
+  }
+  if(!DATA.days[dateStr].tasks) DATA.days[dateStr].tasks = Array.from({length:9},()=>({text:'',done:false}));
+  return DATA.days[dateStr];
+}
+function fmt(d){ // yyyy-mm-dd
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), da=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${da}`;
+}
+function todayStr(){ return fmt(new Date()); }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ===================== ROUTING ===================== */
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el = document.getElementById('page-'+name);
+  if(el) el.classList.add('active');
+  window.location.hash = name;
+  syncUsernames();
+  if(name==='month') renderMonth();
+  if(name==='week') renderWeek();
+  if(name==='day') renderDay();
+  if(name==='pay') renderPay();
+  if(name==='freezone') renderFreezone();
+}
+function syncUsernames(){
+  const n = DATA.name || '';
+  ['home','month','week','day','pay','fz','acc'].forEach(id=>{
+    const el = document.getElementById(id+'-username');
+    if(el) el.textContent = n;
+  });
+}
+document.addEventListener('click', (e)=>{
+  const goEl = e.target.closest('[data-go]');
+  if(goEl){ showPage(goEl.getAttribute('data-go')); }
+});
+
+/* ===================== SIGN IN ===================== */
+document.getElementById('btn-enter').addEventListener('click', ()=>{
+  const name = document.getElementById('signin-name').value.trim();
+  if(!name){ toast('الرجاء كتابة الاسم'); return; }
+  DATA.name = name; save();
+  showPage('home');
+});
+
+/* ===================== MONTH PAGE ===================== */
+const monthNames = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+const weekDaysAr = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+function collectMonthField(field){
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  let items = [];
+  Object.keys(DATA.days).forEach(ds=>{
+    const d = new Date(ds+'T00:00:00');
+    if(d.getFullYear()===y && d.getMonth()===m){
+      const day = DATA.days[ds];
+      if(field==='tasks'){
+        (day.tasks||[]).forEach(t=>{ if(t.text && t.text.trim()) items.push(t.text.trim()); });
+      } else if(day[field] && day[field].trim()){
+        items.push(day[field].trim());
+      }
+    }
+  });
+  // include week notes for month too (for 'notes' field)
+  if(field==='notes'){
+    Object.values(DATA.weeks||{}).forEach(w=>{
+      if(w.notes && w.notes.trim()) items.push(w.notes.trim());
+    });
+    Object.entries(DATA.freezone||{}).forEach(([ds,fz])=>{
+      const d = new Date(ds+'T00:00:00');
+      if(d.getFullYear()===y && d.getMonth()===m && fz.text && fz.text.trim()) items.push(fz.text.trim());
+    });
+  }
+  return items;
+}
+
+function fillTicker(id, items){
+  const wrap = document.getElementById(id);
+  const track = wrap.querySelector('.ticker-track');
+  if(items.length===0){
+    wrap.classList.add('empty');
+    track.innerHTML = '<span class="muted">لا يوجد شيء بعد</span>';
+  } else {
+    wrap.classList.remove('empty');
+    track.textContent = items.join('   •   ');
+  }
+}
+
+function renderMonth(){
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  document.getElementById('cal-month-name').textContent = monthNames[m];
+  document.getElementById('cal-month-num').textContent = String(m+1).padStart(2,'0');
+
+  fillTicker('ticker-tasks', collectMonthField('tasks'));
+  fillTicker('ticker-goals', collectMonthField('goals'));
+  fillTicker('ticker-ideas', collectMonthField('idea'));
+  fillTicker('ticker-notes', collectMonthField('notes'));
+
+  const table = document.getElementById('cal-table');
+  const thead = table.querySelector('thead');
+  const tbody = table.querySelector('tbody');
+  thead.innerHTML = '<tr>'+weekDaysAr.map(w=>`<th>${w}</th>`).join('')+'</tr>';
+
+  const firstDay = new Date(y,m,1);
+  const startWeekday = firstDay.getDay(); // 0=sun
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const todayD = now.getDate();
+  const isCurrentMonthReal = true;
+
+  let rows = [];
+  let row = new Array(startWeekday).fill(null);
+  for(let d=1; d<=daysInMonth; d++){
+    row.push(d);
+    if(row.length===7){ rows.push(row); row=[]; }
+  }
+  if(row.length){ while(row.length<7) row.push(null); rows.push(row); }
+
+  tbody.innerHTML = rows.map(r=>{
+    return '<tr>'+r.map(d=>{
+      if(d===null) return '<td class="empty"></td>';
+      const dateStr = fmt(new Date(y,m,d));
+      const isToday = d===todayD;
+      const starred = DATA.redStars.includes(dateStr);
+      return `<td class="${isToday?'today':''}" data-date="${dateStr}">${starred?'<span class="star">★</span>':''}${d}</td>`;
+    }).join('') + '</tr>';
+  }).join('');
+
+  // click / long-press handling
+  let pressTimer = null; let longPressed = false;
+  tbody.querySelectorAll('td[data-date]').forEach(td=>{
+    const dateStr = td.getAttribute('data-date');
+    const start = ()=>{ longPressed=false; pressTimer = setTimeout(()=>{
+      longPressed = true;
+      const idx = DATA.redStars.indexOf(dateStr);
+      if(idx>=0) DATA.redStars.splice(idx,1); else DATA.redStars.push(dateStr);
+      save(); renderMonth();
+    }, 550); };
+    const cancel = ()=>{ clearTimeout(pressTimer); };
+    td.addEventListener('mousedown', start);
+    td.addEventListener('touchstart', start, {passive:true});
+    td.addEventListener('mouseup', cancel);
+    td.addEventListener('mouseleave', cancel);
+    td.addEventListener('touchend', cancel);
+    td.addEventListener('click', ()=>{
+      if(longPressed){ longPressed=false; return; }
+      window.__pendingDayDate = dateStr;
+      showPage('day');
+    });
+  });
+}
+
+/* ===================== WEEK PAGE ===================== */
+function weekKeyFromToday(){ return todayStr(); }
+
+function renderWeek(){
+  const key = weekKeyFromToday();
+  if(!DATA.weeks[key]){
+    const days = [];
+    for(let i=0;i<7;i++){
+      const d = new Date(); d.setDate(d.getDate()+i);
+      days.push({ date: fmt(d), dayName:'', lines:['','','',''] });
+    }
+    DATA.weeks[key] = { days, notes:'' };
+    save();
+  }
+  const wk = DATA.weeks[key];
+  document.getElementById('week-notes').value = wk.notes || '';
+
+  const colors = ['card-pink','card-olive','card-sand','card-sage','card-lavender','card-peach','card-gray'];
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = '';
+  wk.days.forEach((day, i)=>{
+    const div = document.createElement('div');
+    div.className = 'week-day-card' + (i===6 ? ' full' : '');
+    div.style.background = `var(--${colors[i]})`;
+    const d = new Date(day.date+'T00:00:00');
+    const dd = String(d.getDate()).padStart(2,'0'), mm=String(d.getMonth()+1).padStart(2,'0'), yy=d.getFullYear();
+    div.innerHTML = `
+      <div class="week-day-head">
+        <span>date: ${dd}/${mm}/${yy}</span>
+        <input type="text" placeholder="اليوم" value="${day.dayName||''}" data-idx="${i}" class="wd-name">
+      </div>
+      <div class="week-day-lines">
+        ${[0,1,2,3].map(li=>`<input type="text" value="${(day.lines&&day.lines[li])||''}" data-idx="${i}" data-line="${li}" class="wd-line">`).join('')}
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+
+  document.getElementById('week-notes').oninput = (e)=>{ wk.notes = e.target.value; save(); };
+  grid.querySelectorAll('.wd-name').forEach(inp=>{
+    inp.oninput = (e)=>{ wk.days[+e.target.dataset.idx].dayName = e.target.value; save(); };
+  });
+  grid.querySelectorAll('.wd-line').forEach(inp=>{
+    inp.oninput = (e)=>{ wk.days[+e.target.dataset.idx].lines[+e.target.dataset.line] = e.target.value; save(); };
+  });
+}
+
+/* ===================== DAY PAGE ===================== */
+function renderDay(){
+  const dateStr = window.__pendingDayDate || todayStr();
+  window.__pendingDayDate = null;
+  const dayInput = document.getElementById('day-date');
+  dayInput.value = dateStr;
+  const day = ensureDay(dateStr);
+  document.getElementById('day-idea').value = day.idea || '';
+  document.getElementById('day-goals').value = day.goals || '';
+  document.getElementById('day-payments').value = day.payments || '';
+  document.getElementById('day-notes').value = day.notes || '';
+
+  const tasksWrap = document.getElementById('day-tasks');
+  tasksWrap.innerHTML = day.tasks.map((t,i)=>`
+    <div class="task-row">
+      <button class="task-check ${t.done?'done':''}" data-i="${i}"></button>
+      <input type="text" value="${t.text||''}" data-i="${i}" placeholder="مهمة...">
+    </div>
+  `).join('');
+
+  dayInput.onchange = ()=>{ window.__pendingDayDate = dayInput.value; renderDay(); };
+  document.getElementById('day-idea').oninput = (e)=>{ ensureDay(dateStr).idea = e.target.value; save(); };
+  document.getElementById('day-goals').oninput = (e)=>{ ensureDay(dateStr).goals = e.target.value; save(); };
+  document.getElementById('day-payments').oninput = (e)=>{ ensureDay(dateStr).payments = e.target.value; save(); };
+  document.getElementById('day-notes').oninput = (e)=>{ ensureDay(dateStr).notes = e.target.value; save(); };
+  tasksWrap.querySelectorAll('input[type=text]').forEach(inp=>{
+    inp.oninput = (e)=>{ ensureDay(dateStr).tasks[+e.target.dataset.i].text = e.target.value; save(); };
+  });
+  tasksWrap.querySelectorAll('.task-check').forEach(btn=>{
+    btn.onclick = (e)=>{
+      const i = +e.target.dataset.i;
+      const t = ensureDay(dateStr).tasks[i];
+      t.done = !t.done; save(); renderDay();
+    };
+  });
+}
+
+/* ===================== PAY PAGE ===================== */
+function ensurePayDefaults(){
+  if(!DATA.pay) DATA.pay = {subs:[], necessities:[]};
+  if(DATA.pay.subs.length===0) DATA.pay.subs = Array.from({length:4},()=>({date:'',text:''}));
+  if(DATA.pay.necessities.length===0) DATA.pay.necessities = Array.from({length:4},()=>({date:'',text:''}));
+}
+function renderPayList(id, arr, key){
+  const wrap = document.getElementById(id);
+  wrap.innerHTML = arr.map((row,i)=>`
+    <div class="pay-row">
+      <input type="date" value="${row.date||''}" data-i="${i}" class="pay-date">
+      <input type="text" value="${row.text||''}" data-i="${i}" placeholder="البيان..." class="pay-text">
+    </div>
+  `).join('');
+  wrap.querySelectorAll('.pay-date').forEach(inp=>{
+    inp.onchange = (e)=>{ arr[+e.target.dataset.i].date = e.target.value; save(); };
+  });
+  wrap.querySelectorAll('.pay-text').forEach(inp=>{
+    inp.oninput = (e)=>{ arr[+e.target.dataset.i].text = e.target.value; save(); };
+  });
+}
+function renderPay(){
+  ensurePayDefaults();
+  renderPayList('pay-subs', DATA.pay.subs);
+  renderPayList('pay-necessities', DATA.pay.necessities);
+}
+document.querySelectorAll('[data-add]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const key = btn.getAttribute('data-add');
+    DATA.pay[key].push({date:'',text:''});
+    save(); renderPay();
+  });
+});
+
+/* ===================== FREE ZONE PAGE ===================== */
+let fzCtx = null, fzDrawing = false;
+function ensureFz(dateStr){
+  if(!DATA.freezone[dateStr]) DATA.freezone[dateStr] = { mode:'lined', text:'', drawing:null };
+  return DATA.freezone[dateStr];
+}
+function renderFreezone(){
+  const dateStr = todayStr();
+  const fz = ensureFz(dateStr);
+  document.getElementById('fz-date').value = dateStr;
+  document.getElementById('fz-textarea').value = fz.text || '';
+  setFzMode(fz.mode || 'lined');
+
+  document.getElementById('fz-date').onchange = (e)=>{
+    // switching date within free zone (single-day tool, but allow browsing)
+    renderFreezoneForDate(e.target.value);
+  };
+  document.getElementById('fz-textarea').oninput = (e)=>{
+    ensureFz(document.getElementById('fz-date').value).text = e.target.value; save();
+  };
+
+  const canvas = document.getElementById('fz-canvas');
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = canvas.clientWidth || 300;
+  canvas.height = 380;
+  fzCtx = canvas.getContext('2d');
+  fzCtx.lineWidth = 2.5; fzCtx.lineCap='round'; fzCtx.strokeStyle = '#333';
+  if(fz.drawing){
+    const img = new Image();
+    img.onload = ()=> fzCtx.drawImage(img,0,0,canvas.width,canvas.height);
+    img.src = fz.drawing;
+  }
+  canvas.onpointerdown = (e)=>{ fzDrawing=true; const r=canvas.getBoundingClientRect(); fzCtx.beginPath(); fzCtx.moveTo(e.clientX-r.left, e.clientY-r.top); };
+  canvas.onpointermove = (e)=>{ if(!fzDrawing) return; const r=canvas.getBoundingClientRect(); fzCtx.lineTo(e.clientX-r.left, e.clientY-r.top); fzCtx.stroke(); };
+  window.addEventListener('pointerup', ()=>{
+    if(fzDrawing){
+      fzDrawing=false;
+      const d = document.getElementById('fz-date').value;
+      ensureFz(d).drawing = canvas.toDataURL();
+      save();
+    }
+  });
+}
+function renderFreezoneForDate(dateStr){
+  const fz = ensureFz(dateStr);
+  document.getElementById('fz-textarea').value = fz.text || '';
+  setFzMode(fz.mode || 'lined');
+  const canvas = document.getElementById('fz-canvas');
+  fzCtx.clearRect(0,0,canvas.width,canvas.height);
+  if(fz.drawing){
+    const img = new Image();
+    img.onload = ()=> fzCtx.drawImage(img,0,0,canvas.width,canvas.height);
+    img.src = fz.drawing;
+  }
+  document.getElementById('fz-textarea').oninput = (e)=>{ ensureFz(dateStr).text = e.target.value; save(); };
+}
+function setFzMode(mode){
+  const dateStr = document.getElementById('fz-date').value;
+  ensureFz(dateStr).mode = mode; save();
+  document.getElementById('fz-pen').classList.toggle('active', mode==='free');
+  document.getElementById('fz-key').classList.toggle('active', mode==='lined');
+  document.getElementById('fz-textarea').classList.toggle('hidden', mode==='free');
+  document.getElementById('fz-canvas').classList.toggle('hidden', mode!=='free');
+}
+document.getElementById('fz-pen').addEventListener('click', ()=> setFzMode('free'));
+document.getElementById('fz-key').addEventListener('click', ()=> setFzMode('lined'));
+
+/* ===================== ACCOUNT PAGE ===================== */
+document.getElementById('btn-export').addEventListener('click', ()=>{
+  document.getElementById('export-from').value = '';
+  document.getElementById('export-to').value = '';
+  document.getElementById('export-modal').classList.remove('hidden');
+});
+document.getElementById('export-cancel').addEventListener('click', ()=>{
+  document.getElementById('export-modal').classList.add('hidden');
+});
+document.getElementById('export-confirm').addEventListener('click', ()=>{
+  const from = document.getElementById('export-from').value;
+  const to = document.getElementById('export-to').value;
+  let exportObj = JSON.parse(JSON.stringify(DATA));
+  if(from || to){
+    const fromD = from ? new Date(from+'T00:00:00') : null;
+    const toD = to ? new Date(to+'T23:59:59') : null;
+    const filteredDays = {};
+    Object.entries(DATA.days).forEach(([ds,val])=>{
+      const d = new Date(ds+'T00:00:00');
+      if((!fromD || d>=fromD) && (!toD || d<=toD)) filteredDays[ds]=val;
+    });
+    exportObj.days = filteredDays;
+  }
+  const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const suffix = (from||to) ? `_${from||'start'}_${to||'end'}` : '_all';
+  a.href = url; a.download = `adhd_note_app_export${suffix}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  document.getElementById('export-modal').classList.add('hidden');
+  toast('تم تنزيل ملف البيانات');
+});
+
+document.getElementById('btn-delete').addEventListener('click', ()=>{
+  document.getElementById('delete-modal').classList.remove('hidden');
+});
+document.getElementById('delete-no').addEventListener('click', ()=>{
+  document.getElementById('delete-modal').classList.add('hidden');
+});
+document.getElementById('delete-yes').addEventListener('click', ()=>{
+  localStorage.removeItem(STORAGE_KEY);
+  DATA = loadData();
+  document.getElementById('delete-modal').classList.add('hidden');
+  document.getElementById('signin-name').value = '';
+  showPage('signin');
+});
+
+/* ===================== PWA INSTALL ===================== */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.createElement('div');
+  banner.className = 'install-banner';
+  banner.innerHTML = `<span>ثبّت التطبيق على هاتفك للوصول السريع</span><button id="install-btn">تثبيت</button>`;
+  document.getElementById('home-install-slot').appendChild(banner.cloneNode(true));
+  document.getElementById('acc-install-slot').appendChild(banner);
+  document.querySelectorAll('#install-btn').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+    });
+  });
+});
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
+/* ===================== INIT ===================== */
+function init(){
+  const hash = window.location.hash.replace('#','');
+  if(DATA.name){
+    document.getElementById('signin-name').value = DATA.name;
+    showPage(hash && hash!=='signin' ? hash : 'home');
+  } else {
+    showPage('signin');
+  }
+}
+init();
+</script>
+</body>
+</html>
